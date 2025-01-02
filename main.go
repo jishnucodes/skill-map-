@@ -15,5 +15,10 @@ func main() {
 			"message": "Welcome to my skill map!",
 		})
 	})
+	r.GET("/login", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Login page",
+		})
+	})
 	r.Run() // listen and serve on 0.0.0.0:8080
 }

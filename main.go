@@ -24,5 +24,9 @@ func main() {
 	userHandler := handlers.NewUserHandler(userManager)
 	userHandler.RegisterUserApis(r)
 
+	postManager := managers.NewPostManager()
+	postHandler := handlers.NewPostHandler(postManager)
+	postHandler.RegisterPostApis(r)
+
 	r.Run() 
 }

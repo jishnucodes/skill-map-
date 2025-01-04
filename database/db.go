@@ -16,4 +16,5 @@ func Initialize() {
 	}
 
 	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.Post{})
 }

@@ -14,12 +14,21 @@ type UserUpdateInput struct {
 	Password string `json:"password"`
 }
 
+type UserSigninInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func NewUserCreationInput() *UserCreationInput {
 	return &UserCreationInput{}
 }
 
 func NewUserUpdateInput() *UserUpdateInput {
 	return &UserUpdateInput{}
+}
+
+func NewUserSigninInput() *UserSigninInput {
+	return &UserSigninInput{}
 }
 
 

@@ -13,6 +13,7 @@ type UserManager interface {
 	UserDetail(id string) (*models.User, error)
 	DeleteUser(id string) (error)
 	UpdateUser(id string, userData *common.UserUpdateInput) (*models.User, error)
+	FindSingleUserByEmail(email string) (*models.User, error)
 }
 
 type userManager struct {
@@ -21,6 +22,18 @@ type userManager struct {
 
 func NewUserManager() UserManager {
 	return &userManager{}
+}
+
+func (um *userManager) FindSingleUserByEmail(email string) (*models.User, error) {
+
+	user := models.User{}
+
+	result := database.DB.Where("email = ?", email).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+	
 }
 
 func (um *userManager) CreateUser(userData *common.UserCreationInput) (*models.User, error) {

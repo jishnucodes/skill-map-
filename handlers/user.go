@@ -30,6 +30,8 @@ func (handler *UserHandler) RegisterUserApis(r *gin.Engine) {
 
 
 }
+
+
 	
 
 func (handler *UserHandler) Create(ctx *gin.Context) {

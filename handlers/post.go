@@ -23,8 +23,14 @@ func NewPostHandler(postManager *managers.PostManager) *PostHandler {
 
 func (handler *PostHandler) RegisterPostApis(r *gin.Engine) {
 	postGroup := r.Group(handler.groupName)
-	postGroup.GET("", handler.GetPosts)
+
+	postGroup.Use(common.ValidateToken())
+	
+	postGroup.GET("",  handler.GetPosts)
 	postGroup.POST("/create", handler.CreatePost)
+	postGroup.GET("/:post_id", handler.GetSinglePost)
+	postGroup.DELETE("/:post_id", handler.DeletePost)
+	postGroup.PUT("/:post_id", handler.UpdatePost)
 }
 
 func (handler *PostHandler) GetPosts(ctx *gin.Context)  {
@@ -69,3 +75,84 @@ func (handler *PostHandler) CreatePost(ctx *gin.Context)  {
 	})
 
 }
+
+func (handler *PostHandler) GetSinglePost(ctx *gin.Context)  {
+
+	postId, ok := ctx.Params.Get("post_id")
+
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "post_id is missing"})
+		return
+	}
+
+	post, err := handler.postManager.GetSinglePost(postId)
+	if err!= nil {
+		 ctx.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+	  "message": "success",
+	  "data": post,
+	})
+
+}
+
+func (handler *PostHandler) DeletePost(ctx *gin.Context)  {
+
+	postId, ok := ctx.Params.Get("post_id")
+
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "post_id is missing"})
+		return
+	}
+
+	err := handler.postManager.DeletePost(postId)
+	if err!= nil {
+		 ctx.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+	  "message": "post deleted successfully",
+	})
+
+}
+
+func (handler *PostHandler) UpdatePost(ctx *gin.Context)  {
+
+	postId, ok := ctx.Params.Get("post_id")
+
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "post_id is missing"})
+		return
+	}
+
+	postData := common.NewPostUpdateInput()
+
+	err :=ctx.BindJSON(&postData)
+
+	if err!= nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedPost, err := handler.postManager.UpdatePost(postId, postData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message": "success",
+		"data": updatedPost,
+	})
+
+}
+

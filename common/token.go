@@ -35,8 +35,8 @@ func  GenerateJWT(userID uint, secretKey string) (string, error) {
 func ValidateToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Retrieve the token from the cookie
-		tokenStringFromCookie, err := ctx.Cookie("token")
-		if err != nil {
+		tokenStringFromCookie, _ := ctx.Cookie("token")
+		if tokenStringFromCookie == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized - no token"})
 			ctx.Abort()
 			return
